@@ -79,6 +79,7 @@ RUN npm install -g @angular/cli
 # Set locales
 RUN locale-gen en_US.UTF-8 en_GB.UTF-8 de_DE.UTF-8 es_ES.UTF-8 fr_FR.UTF-8 it_IT.UTF-8 km_KH sv_SE.UTF-8 fi_FI.UTF-8
 
+# Enable apache mods
 RUN a2enmod rewrite expires ssl authz_groupfile include headers actions unique_id remoteip 
 
 # Clean
