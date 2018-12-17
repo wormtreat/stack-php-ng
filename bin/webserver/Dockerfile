@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update everything first:
-RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get update -y && apt-get upgrade -y --fix-missing
 
 # Install essentials:
 RUN apt-get install -yq --no-install-recommends \
@@ -78,19 +78,13 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private
 #Install Angular CLI
 RUN npm install -g @angular/cli
 
-#Install App
-RUN cd /opt/ngapp && \
-    npm install
-
-# Clean
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Set locales
 RUN locale-gen en_US.UTF-8 en_GB.UTF-8 de_DE.UTF-8 es_ES.UTF-8 fr_FR.UTF-8 it_IT.UTF-8 km_KH sv_SE.UTF-8 fi_FI.UTF-8
 
 RUN a2enmod rewrite expires ssl authz_groupfile include headers actions unique_id remoteip 
 
-RUN ng serve --host 0.0.0.0
+# Clean
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 80 443 4200
     
