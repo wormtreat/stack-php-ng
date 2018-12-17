@@ -14,16 +14,18 @@ RUN apt-get install -yq --no-install-recommends \
     libcurl4-openssl-dev \
     nano \
     lnav \
-    ca-certificates
+    ca-certificates\
+    composer \
+    mysql-client \
+    iputils-ping \
+    locales \
+    gnupg2
 
 # Install everything else:
 RUN apt-get install -yq --no-install-recommends \
     graphicsmagick \
     imagemagick \
     ghostscript \
-    mysql-client \
-    iputils-ping \
-    locales \
     sqlite3 \
     apache2 \
     libapache2-mod-php7.2 \
@@ -62,20 +64,16 @@ RUN apt-get install -yq --no-install-recommends \
     libsvn-dev \
     subversion \
     subversion-tools \
-    libapache2-mod-svn \
-    # Node and friends
-    nodejs \
-    node-cli \
-    libssl1.0-dev \
-    nodejs-dev \
-    node-gyp \
-    npm \
-    composer
+    libapache2-mod-svn
     
 # Generate/Install SSL Certificates:
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/web-php7-apache.key -out /etc/ssl/certs/web-php7-apache.crt -subj "/C=US/ST=Kansas/L=Lenexa/O=Web Development/OU=Web Development/CN=localhost"
 
-#Install Angular CLI
+# Install Node
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt install -yq --no-install-recommends nodejs
+
+# Install Angular CLI
 RUN npm install -g @angular/cli
 
 # Set locales
