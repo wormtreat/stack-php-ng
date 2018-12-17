@@ -23,7 +23,7 @@ services:
         ipv4_address: 172.33.0.10
         aliases:
           - ngapp
-          - ngapp.heronerd.com
+          - ngapp.localhost
   maria:
     build: ./bin/maria
     container_name: 'stack-ng-maria'
