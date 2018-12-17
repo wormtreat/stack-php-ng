@@ -1,0 +1,8 @@
+/.env
+/.vscode
+/config/*
+/data/mysql*
+/logs/*
+/www/**
+/ngapp/**
+.DS_Store

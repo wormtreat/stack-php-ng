@@ -1,0 +1,73 @@
+version: "3"
+
+services:
+  webserver:
+    build: 
+      context: ./bin/webserver
+    container_name: 'stack-ng-www'
+    restart: 'always'
+    ports:
+      - "80:80"
+      - "443:443"
+      - "4200:4200"
+    links: 
+      - maria
+    volumes: 
+      - ${DOCUMENT_ROOT-./www}:/var/www/html
+      - ${DOCUMENT_ROOT-./ngapp}:/opt/ngapp
+      - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/php.ini
+      - ${VHOSTS_DIR-./config/vhosts}:/etc/apache2/sites-enabled
+      - ${LOG_DIR-./logs/apache2}:/var/log/apache2
+    networks:
+      ng_net:
+        ipv4_address: 172.33.0.10
+        aliases:
+          - ngapp
+          - ngapp.heronerd.com
+  maria:
+    build: ./bin/maria
+    container_name: 'stack-ng-maria'
+    restart: 'always'
+    ports:
+      - "3306:3306"
+    volumes: # Remove reference to volumes on Windows machines, backup to a shared folder or something else instead.
+      - ${MYSQL_DATA_DIR-./data/mysql}:/var/lib/mysql
+      - ${MYSQL_LOG_DIR-./logs/mysql}:/var/log/mysql
+      - ${MYSQL_IMPORT_DIR-./data/import}:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: testering
+    networks:
+      ng_net:
+        ipv4_address: 172.33.0.20
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: 'stack-ng-phpmyadmin'
+    links:
+      - maria
+    environment:
+      PMA_HOST: maria
+      PMA_PORT: 3306
+    ports:
+      - '8080:80'
+    volumes: 
+      - /sessions
+    networks:
+      ng_net:
+        ipv4_address: 172.33.0.30
+  redis:
+    container_name: 'stack-ng-redis'
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      ng_net:
+        ipv4_address: 172.33.0.40
+networks:
+  ng_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.33.0.0/24
